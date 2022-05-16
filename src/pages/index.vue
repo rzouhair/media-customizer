@@ -1,58 +1,94 @@
 <script setup lang="ts">
-import { useUserStore } from '~/stores/user'
+import type { Ref } from 'vue'
+import axios from 'axios'
+import YouTube from 'vue3-youtube'
 
-const user = useUserStore()
-const name = $ref(user.savedName)
-
-const router = useRouter()
-const go = () => {
-  if (name)
-    router.push(`/hi/${encodeURIComponent(name)}`)
+interface Video {
+  id: string
+  loop: number
+  start: number
+  end: number
+  autoplay: number
 }
 
-const { t } = useI18n()
+const BASE_URL = 'https://www.youtube.com/watch?v'
+
+const youtube: Ref<any> = ref(null)
+const showFrame: Ref<boolean> = ref(false)
+const src: Ref<string> = ref('')
+
+const newVideoId = ref('')
+
+const vars: Ref<YT.PlayerVars> = ref({
+  loop: 1,
+})
+
+const timeStampsPerVideo: Ref<Video[]> = ref([
+  {
+    id: 'iVChyaHLH68',
+    loop: 1,
+    start: 1195,
+    end: 1200,
+    autoplay: 1,
+  },
+])
+
+const submitVideo = async () => {
+  const test = await axios.get(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${newVideoId.value}&key=AIzaSyCwk7uCR8zZLOg38CuqUg5aZHmlmbRvkDk`)
+
+  newVideoId.value = ''
+
+  console.log(test.data?.items?.[0].snippet.title)
+}
+
+const start = (timestamp: Video) => {
+  showFrame.value = false
+  src.value = `${BASE_URL}=${timestamp.id}`
+  vars.value = {
+    loop: 1,
+    end: timestamp.end,
+    start: timestamp.start,
+    autoplay: timestamp.autoplay,
+  }
+
+  setTimeout(() => {
+    showFrame.value = true
+    youtube.value.unMute()
+  }, 500)
+}
+
+const StateChange = (state: any) => {
+  if (state.data === 0) {
+    state.target.playVideo()
+    state.target.seekTo(10, true)
+  }
+}
+
+onBeforeMount(async () => {
+})
 </script>
 
 <template>
   <div>
-    <div text-4xl>
-      <div i-carbon-campsite inline-block />
-    </div>
-    <p>
-      <a rel="noreferrer" href="https://github.com/antfu/vitesse" target="_blank">
-        Vitesse
-      </a>
-    </p>
-    <p>
-      <em text-sm opacity-75>{{ t('intro.desc') }}</em>
-    </p>
-
-    <div py-4 />
-
-    <input
-      id="input"
-      v-model="name"
-      :placeholder="t('intro.whats-your-name')"
-      :aria-label="t('intro.whats-your-name')"
-      type="text"
-      autocomplete="false"
-      p="x4 y2"
-      w="250px"
-      text="center"
-      bg="transparent"
-      border="~ rounded gray-200 dark:gray-700"
-      outline="none active:none"
-      @keydown.enter="go"
-    >
-    <label class="hidden" for="input">{{ t('intro.whats-your-name') }}</label>
-
     <div>
-      <button
-        btn m-3 text-sm
-        :disabled="!name"
-        @click="go"
-      >
-        {{ t('button.go') }}
+      <p>Add a new video</p>
+      <input v-model="newVideoId" type="text">
+      <button @click="submitVideo">
+        Submit
+      </button>
+    </div>
+    <YouTube
+      v-if="showFrame"
+      ref="youtube"
+      :src="src"
+      :vars="vars"
+      @state-change="StateChange"
+    />
+
+    <div v-for="timestamp in timeStampsPerVideo" :key="timestamp.id">
+      <p>{{ timestamp.id }}</p>
+      <button @click="start(timestamp)">
+        Start
       </button>
     </div>
   </div>
