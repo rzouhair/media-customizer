@@ -5,15 +5,7 @@ import YouTube from 'vue3-youtube'
 import { Trash } from '@vicons/tabler'
 import { useMessage } from 'naive-ui'
 import { toggleDark } from '~/composables'
-import { deleteTimestamp as deleteTs, getTimestamps, timestampsCollection, updateTimestamp, useLoadTimestamps } from '~/firebase'
-
-interface Video {
-  id: string
-  loop: number
-  start: number
-  end: number
-  autoplay: number
-}
+import { getTimestamps, updateTimestamp, useLoadTimestamps } from '~/firebase'
 
 const BASE_URL = 'https://www.youtube.com/watch?v'
 
@@ -37,7 +29,6 @@ const filteredTimestamps = computed(() => timeStampsPerVideo.value.filter((ts: a
 
 const submitVideo = async () => {
   const videoId = newVideoId.value.replace('https://', '').replace('www.youtube.com/watch?v=', '')
-  console.log(videoId)
   const videoResp = await axios.get(`https://youtube.googleapis.com/youtube/v3/videos?part=snippet%2CcontentDetails%2Cstatistics&id=${videoId}&key=AIzaSyCwk7uCR8zZLOg38CuqUg5aZHmlmbRvkDk`)
 
   timeStampsPerVideo.value.push({
