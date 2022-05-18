@@ -15,7 +15,7 @@ html.dark {
 #nprogress {
   pointer-events: none;
 }
-
+.ytp-pip-button { display: inline !important; }
 #nprogress .bar {
   background: rgb(13,148,136);
   opacity: 0.75;

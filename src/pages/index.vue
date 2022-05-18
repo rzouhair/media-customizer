@@ -77,6 +77,11 @@ const StateChange = (state: any) => {
   }
 }
 
+const requestPiP = () => {
+  const iframe = youtube.value.player.i
+  console.log(youtube.value)
+}
+
 const deleteTimestamp = async (video: any, index: any) => {
   try {
     loading.value = true
@@ -154,11 +159,12 @@ onBeforeMount(async () => {
         ref="youtube"
         :src="src"
         :vars="vars"
-        width="320px"
-        height="180px"
         @state-change="StateChange"
       />
     </div>
+    <n-button @click="requestPiP">
+      Request PiP
+    </n-button>
     <div class="dark:bg-dark-700 bg-light-500 px-4 py-2 rounded-lg mt-4">
       <p class="font-bold text-center w-full text-lg mb-1">
         Add a new video
