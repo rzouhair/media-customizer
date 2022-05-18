@@ -24,5 +24,7 @@ useHead({
 </script>
 
 <template>
-  <RouterView />
+  <n-message-provider>
+    <RouterView />
+  </n-message-provider>
 </template>
