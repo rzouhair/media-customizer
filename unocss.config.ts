@@ -24,7 +24,10 @@ export default defineConfig({
     presetTypography(),
     presetWebFonts({
       fonts: {
-        sans: 'DM Sans',
+        sans: {
+          name: 'DM Sans',
+          weights: [400, 500, 700, 800],
+        },
         serif: 'DM Serif Display',
         mono: 'DM Mono',
       },
